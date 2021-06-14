@@ -264,9 +264,145 @@ function KillSessionButton({ connector }: { connector: AbstractConnector }) {
   }
 }
 
+function switchNetworkButton(connector: AbstractConnector, chainId: number) {
+  return <>
+    {!!(
+      connector === connectorsByName[ConnectorNames.Network] && chainId
+    ) && (
+      <button
+        style={{
+          height: '3rem',
+          borderRadius: '1rem',
+          cursor: 'pointer'
+        }}
+        onClick={() => {
+          ;(
+            connector as any
+          ).changeChainId(chainId === 1 ? 4 : 1)
+        }}
+      >
+        Switch Networks
+      </button>
+    )}
+    {connector === connectorsByName[ConnectorNames.Portis] &&
+    chainId !== undefined && (
+      <button
+        style={{
+          height: '3rem',
+          borderRadius: '1rem',
+          cursor: 'pointer'
+        }}
+        onClick={() => {
+          ;(
+            connector as any
+          ).changeNetwork(chainId === 1 ? 100 : 1)
+        }}
+      >
+        Switch Networks
+      </button>
+    )}
+  </>;
+}
+
+function signMessageButton(library: Web3Provider, account: string) {
+  return <>
+    {!!(
+      library && account
+    ) && (
+      <button
+        style={{
+          height: '3rem',
+          borderRadius: '1rem',
+          cursor: 'pointer'
+        }}
+        onClick={() => {
+          library
+            .getSigner(account)
+            .signMessage('👋')
+            .then((signature: any) => {
+              window.alert(`Success!\n\n${signature}`)
+            })
+            .catch((error: any) => {
+              window.alert('Failure!' + (
+                error && error.message ? `\n\n${error.message}` : ''
+              ))
+            })
+        }}
+      >
+        Sign Message
+      </button>
+    )}
+  </>;
+}
+
+function ConnectNetworkButton(
+  {
+    currentConnector,
+    activatingConnector,
+    connector,
+    triedEager,
+    error,
+    name,
+    setActivatingConnector,
+    activate
+  }: {
+    currentConnector: any, activatingConnector: any, connector: AbstractConnector, triedEager: boolean, error: Error, name: string, setActivatingConnector: (value: any) => void, activate: (
+      connector: AbstractConnector,
+      onError?: (error: Error) => void,
+      throwErrors?: boolean
+    ) => Promise<void>
+  }
+) {
+  const activating = currentConnector === activatingConnector
+  const connected = currentConnector === connector
+  const disabled = !triedEager
+    || !!activatingConnector
+    || connected
+    || !!error
+
+  return (
+    <button
+      style={{
+        height: '3rem',
+        borderRadius: '1rem',
+        borderColor: activating ?
+          'orange' :
+          connected ? 'green' : 'unset',
+        cursor: disabled ? 'unset' : 'pointer',
+        position: 'relative'
+      }}
+      disabled={disabled}
+      key={name}
+      onClick={() => {
+        setActivatingConnector(currentConnector)
+        activate(connectorsByName[name])
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          color: 'black',
+          margin: '0 0 0 1rem'
+        }}
+      >
+        {activating && <Spinner color={'black'} style={{
+          height: '25%',
+          marginLeft: '-1rem'
+        }}/>}
+        {connected && <span role="img" aria-label="check" />}
+      </div>
+      {name}
+    </button>
+  )
+}
+
 function App() {
-  const context = useWeb3React<Web3Provider>()
-  const { connector, library, chainId, account, activate, deactivate, active, error } = context
+  const { connector, library, chainId, account, activate, deactivate, active, error } = useWeb3React<Web3Provider>()
 
   // handle logic to recognize the connector currently being activated
   const [activatingConnector, setActivatingConnector] = React.useState<any>()
@@ -284,8 +420,8 @@ function App() {
 
   return (
     <>
-      <Header />
-      <hr style={{ margin: '2rem' }} />
+      <Header/>
+      <hr style={{margin: '2rem'}}/>
       <div
         style={{
           display: 'grid',
@@ -295,51 +431,19 @@ function App() {
           margin: 'auto'
         }}
       >
-        {Object.keys(connectorsByName).map(name => {
-          const currentConnector = connectorsByName[name]
-          const activating = currentConnector === activatingConnector
-          const connected = currentConnector === connector
-          const disabled = !triedEager || !!activatingConnector || connected || !!error
-
-          return (
-            <button
-              style={{
-                height: '3rem',
-                borderRadius: '1rem',
-                borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
-                cursor: disabled ? 'unset' : 'pointer',
-                position: 'relative'
-              }}
-              disabled={disabled}
-              key={name}
-              onClick={() => {
-                setActivatingConnector(currentConnector)
-                activate(connectorsByName[name])
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '0',
-                  left: '0',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: 'black',
-                  margin: '0 0 0 1rem'
-                }}
-              >
-                {activating && <Spinner color={'black'} style={{ height: '25%', marginLeft: '-1rem' }} />}
-                {connected && (
-                  <span role="img" aria-label="check">
-                    ✅
-                  </span>
-                )}
-              </div>
-              {name}
-            </button>
-          )
-        })}
+        {Object.entries(connectorsByName).map(([name, currentConnector]) =>
+          ConnectNetworkButton(
+            {
+              currentConnector,
+              activatingConnector,
+              connector,
+              triedEager,
+              error,
+              name,
+              setActivatingConnector,
+              activate
+            }
+          ))}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {(active || error) && (
@@ -373,58 +477,9 @@ function App() {
           margin: 'auto'
         }}
       >
-        {!!(library && account) && (
-          <button
-            style={{
-              height: '3rem',
-              borderRadius: '1rem',
-              cursor: 'pointer'
-            }}
-            onClick={() => {
-              library
-                .getSigner(account)
-                .signMessage('👋')
-                .then((signature: any) => {
-                  window.alert(`Success!\n\n${signature}`)
-                })
-                .catch((error: any) => {
-                  window.alert('Failure!' + (error && error.message ? `\n\n${error.message}` : ''))
-                })
-            }}
-          >
-            Sign Message
-          </button>
-        )}
-        {!!(connector === connectorsByName[ConnectorNames.Network] && chainId) && (
-          <button
-            style={{
-              height: '3rem',
-              borderRadius: '1rem',
-              cursor: 'pointer'
-            }}
-            onClick={() => {
-              ;(connector as any).changeChainId(chainId === 1 ? 4 : 1)
-            }}
-          >
-            Switch Networks
-          </button>
-        )}
-        {connector === connectorsByName[ConnectorNames.Portis] &&
-          chainId !== undefined && (
-            <button
-              style={{
-                height: '3rem',
-                borderRadius: '1rem',
-                cursor: 'pointer'
-              }}
-              onClick={() => {
-                ;(connector as any).changeNetwork(chainId === 1 ? 100 : 1)
-              }}
-            >
-              Switch Networks
-            </button>
-        )}
-        <KillSessionButton connector={connector} />
+        {signMessageButton(library, account)}
+        {switchNetworkButton(connector, chainId)}
+        <KillSessionButton connector={connector}/>
       </div>
     </>
   )
