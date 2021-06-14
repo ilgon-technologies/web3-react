@@ -27,6 +27,7 @@ import {
 } from '../connectors'
 import { Spinner } from '../components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
+import { PrivateKeyConnector } from "../private-key-connector";
 
 enum ConnectorNames {
   Injected = 'Injected',
@@ -401,6 +402,79 @@ function ConnectNetworkButton(
   )
 }
 
+function ConnectPrivateKeyButton(
+  {
+    activatingConnector,
+    connector,
+    triedEager,
+    error,
+    setActivatingConnector,
+    activate
+  }: {
+    activatingConnector: AbstractConnector, connector: AbstractConnector, triedEager: boolean, error: Error, setActivatingConnector: (value: any) => void, activate: (
+      connector: AbstractConnector,
+      onError?: (error: Error) => void,
+      throwErrors?: boolean
+    ) => Promise<void>
+  }
+) {
+  const [privateKey, setPrivateKey] = useState('')
+  const activating = activatingConnector instanceof PrivateKeyConnector
+  const connected = connector instanceof PrivateKeyConnector
+  const disabled = !triedEager
+    || !!activatingConnector
+    || connected
+    || !!error
+
+  return (
+    <div>
+      <input
+        type="text" value={privateKey}
+        onChange={({target: {value}}) => setPrivateKey(value)}/>
+      <button
+        style={{
+          height: '3rem',
+          borderRadius: '1rem',
+          borderColor: activating ?
+            'orange' :
+            connected ? 'green' : 'unset',
+          cursor: disabled ? 'unset' : 'pointer',
+          position: 'relative'
+        }}
+        disabled={disabled}
+        onClick={() => {
+          const c = new PrivateKeyConnector({
+            privateKey: privateKey.replace(/^0x/, ""),
+            chainId: 0x696c67,
+            url: 'https://mainnet-rpc.ilgonwallet.com'
+          })
+          activate(c).then(() => setActivatingConnector(c))
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            color: 'black',
+            margin: '0 0 0 1rem'
+          }}
+        >
+          {activating && <Spinner color={'black'} style={{
+            height: '25%',
+            marginLeft: '-1rem'
+          }}/>}
+          {connected && <span role="img" aria-label="check"/>}
+        </div>
+        Private key
+      </button>
+    </div>
+  )
+}
+
 function App() {
   const { connector, library, chainId, account, activate, deactivate, active, error } = useWeb3React<Web3Provider>()
 
@@ -444,6 +518,16 @@ function App() {
               activate
             }
           ))}
+        {ConnectPrivateKeyButton(
+          {
+            activatingConnector,
+            connector,
+            triedEager,
+            error,
+            setActivatingConnector,
+            activate
+          }
+        )}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {(active || error) && (

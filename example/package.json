@@ -5,6 +5,7 @@
     "build": "next build && next export"
   },
   "dependencies": {
+    "@0x/subproviders": "^6.5.3",
     "@ethersproject/providers": "^5.1.2",
     "@ethersproject/units": "^5.1.0",
     "@web3-react/abstract-connector": "latest",
