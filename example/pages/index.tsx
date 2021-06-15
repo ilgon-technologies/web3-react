@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Web3ReactProvider, useWeb3React, UnsupportedChainIdError } from '@web3-react/core'
+import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core'
 import {
   NoEthereumProviderError,
   UserRejectedRequestError as UserRejectedRequestErrorInjected
@@ -12,7 +12,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
 import { useEagerConnect, useInactiveListener } from '../hooks'
-import { injected, walletconnect, ledger, trezor } from '../connectors'
+import { injected, ledger, trezor, walletconnect } from '../connectors'
 import { Spinner } from '../components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { PrivateKeyConnector } from '../private-key-connector'
