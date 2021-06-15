@@ -327,8 +327,8 @@ function ConnectPrivateKeyButton({
   const disabled = !!(!triedEager || activatingConnector || connected || error)
 
   return (
-    <div>
-      <input type="text" value={privateKey} onChange={({ target: { value } }) => setPrivateKey(value)} />
+    <div style={{display: 'flex'}}>
+      <input style={{width: '100%'}} type="text" value={privateKey} onChange={({ target: { value } }) => setPrivateKey(value)} />
       <button
         style={{
           height: '3rem',
