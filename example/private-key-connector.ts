@@ -1,10 +1,9 @@
-import {ConnectorUpdate} from '@web3-react/types'
-import {AbstractConnector} from '@web3-react/abstract-connector'
+import { ConnectorUpdate } from '@web3-react/types'
+import { AbstractConnector } from '@web3-react/abstract-connector'
 import Web3ProviderEngine from 'web3-provider-engine'
 import CacheSubprovider from 'web3-provider-engine/subproviders/cache.js'
-import {RPCSubprovider} from '@0x/subproviders/lib/src/subproviders/rpc_subprovider' // https://github.com/0xProject/0x-monorepo/issues/1400
-import {PrivateKeyWalletSubprovider} from "@0x/subproviders/lib/src/subproviders/private_key_wallet";
-
+import { RPCSubprovider } from '@0x/subproviders/lib/src/subproviders/rpc_subprovider' // https://github.com/0xProject/0x-monorepo/issues/1400
+import { PrivateKeyWalletSubprovider } from '@0x/subproviders/lib/src/subproviders/private_key_wallet'
 
 /**
  * based on TrezorConnector and
@@ -30,8 +29,8 @@ export class PrivateKeyConnector extends AbstractConnector {
   }) {
     super({ supportedChainIds: [chainId] })
     this.chainId = chainId
-    this.provider = new Web3ProviderEngine({ pollingInterval });
-    this.pkSubprovider = new PrivateKeyWalletSubprovider(privateKey, this.chainId);
+    this.provider = new Web3ProviderEngine({ pollingInterval })
+    this.pkSubprovider = new PrivateKeyWalletSubprovider(privateKey, this.chainId)
     this.provider.addProvider(this.pkSubprovider)
     this.provider.addProvider(new CacheSubprovider())
     this.provider.addProvider(new RPCSubprovider(url, requestTimeoutMs))
