@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { Web3ReactProvider, useWeb3React, UnsupportedChainIdError } from '@web3-react/core'
 import {
   NoEthereumProviderError,
@@ -12,26 +12,18 @@ import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
 import { useEagerConnect, useInactiveListener } from '../hooks'
-import {
-  injected,
-  walletconnect,
-  ledger,
-  trezor,
-} from '../connectors'
+import { injected, walletconnect, ledger, trezor } from '../connectors'
 import { Spinner } from '../components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import { PrivateKeyConnector } from "../private-key-connector";
-import {
-  ExternalProvider,
-  JsonRpcFetchFunc
-} from "@ethersproject/providers/src.ts/web3-provider";
-import {Web3ReactContextInterface} from "../../packages/core/src/types";
+import { PrivateKeyConnector } from '../private-key-connector'
+import { ExternalProvider, JsonRpcFetchFunc } from '@ethersproject/providers/src.ts/web3-provider'
+import { Web3ReactContextInterface } from '../../packages/core/src/types'
 
 const connectors = {
   injected,
   walletconnect,
   ledger,
-  trezor,
+  trezor
 } as const
 
 function getErrorMessage(error: Error) {
@@ -153,7 +145,7 @@ function Balance() {
 
       library
         .getBalance(account)
-        .then((balance) => {
+        .then(balance => {
           if (!stale) {
             setBalance(balance)
           }
@@ -207,162 +199,147 @@ function Header() {
   )
 }
 
-function KillSessionButton({ connector }: { connector: AbstractConnector  }) {
+function KillSessionButton({ connector }: { connector: AbstractConnector }) {
   if (connector instanceof WalletConnectConnector) {
-    const name = Object.entries(connectors).find(
-      ([, c]) => c === connector
-    )[0];
+    const name = Object.entries(connectors).find(([, c]) => c === connector)[0]
     return (
-      <button
-        style={{
-          height: "3rem",
-          borderRadius: "1rem",
-          cursor: "pointer",
-        }}
-        onClick={() => connector.close()}
-      >
-        Kill {name} Session
-      </button>
-    );
-  } else {
-    return null;
-  }
-}
-
-function signMessageButton(library: Web3Provider, account: string) {
-  return <>
-    {library && account && (
       <button
         style={{
           height: '3rem',
           borderRadius: '1rem',
           cursor: 'pointer'
         }}
-        onClick={() => {
-          library
-            .getSigner(account)
-            .signMessage('👋')
-            .then((signature) => {
-              window.alert(`Success!\n\n${signature}`)
-            })
-            .catch((error) => {
-              window.alert('Failure!' + (
-                error && error.message ? `\n\n${error.message}` : ''
-              ))
-            })
-        }}
+        onClick={() => connector.close()}
       >
-        Sign Message
+        Kill {name} Session
       </button>
-    )}
-  </>;
+    )
+  } else {
+    return null
+  }
 }
 
-function ConnectNetworkButton(
-  {
-    currentConnector,
-    activatingConnector,
-    connector,
-    triedEager,
-    error,
-    name,
-    setActivatingConnector,
-    activate
-  }: {
-    currentConnector: AbstractConnector, 
-    activatingConnector: AbstractConnector, 
-    triedEager: boolean, 
-    name: string, 
-    setActivatingConnector: (c: AbstractConnector) => void
-  } & Pick<Web3ReactContextInterface<Web3Provider>, 'connector' | 'error' | 'activate'> 
-) {
-  const activating = currentConnector === activatingConnector
-  const connected = currentConnector === connector
-  const disabled = !!(!triedEager
-    || activatingConnector
-    || connected
-    || error)
-
+function signMessageButton(library: Web3Provider, account: string) {
   return (
-    <button
-      style={{
-        height: '3rem',
-        borderRadius: '1rem',
-        borderColor: activating ?
-          'orange' :
-          connected ? 'green' : 'unset',
-        cursor: disabled ? 'unset' : 'pointer',
-        position: 'relative'
-      }}
-      disabled={disabled}
-      key={name}
-      onClick={() => {
-        setActivatingConnector(currentConnector)
-        activate(connectors[name])
-      }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          color: 'black',
-          margin: '0 0 0 1rem'
-        }}
-      >
-        {activating && <Spinner color={'black'} style={{
-          height: '25%',
-          marginLeft: '-1rem'
-        }}/>}
-        {connected && <span role="img" aria-label="check" />}
-      </div>
-      {name}
-    </button>
+    <>
+      {library && account && (
+        <button
+          style={{
+            height: '3rem',
+            borderRadius: '1rem',
+            cursor: 'pointer'
+          }}
+          onClick={() => {
+            library
+              .getSigner(account)
+              .signMessage('👋')
+              .then(signature => {
+                window.alert(`Success!\n\n${signature}`)
+              })
+              .catch(error => {
+                window.alert('Failure!' + (error && error.message ? `\n\n${error.message}` : ''))
+              })
+          }}
+        >
+          Sign Message
+        </button>
+      )}
+    </>
   )
 }
 
-function ConnectPrivateKeyButton(
-  {
-    activatingConnector,
-    connector,
-    triedEager,
-    error,
-    setActivatingConnector,
-    activate
-  }: {
-    activatingConnector: AbstractConnector, triedEager: boolean, setActivatingConnector: (c: AbstractConnector) => void
-  } & Pick<Web3ReactContextInterface<Web3Provider>, 'connector' | 'error' | 'activate'>
-) {
-  const [privateKey, setPrivateKey] = useState('')
-  const activating = activatingConnector instanceof PrivateKeyConnector
-  const connected = connector instanceof PrivateKeyConnector
-  const disabled = !!(!triedEager
-    || activatingConnector
-    || connected
-    || error)
+type ConnectButtonArgs = {
+  activatingConnector: AbstractConnector
+  triedEager: boolean
+  setActivatingConnector: (c: AbstractConnector) => void
+} & Pick<Web3ReactContextInterface<Web3Provider>, 'connector' | 'error' | 'activate'>
 
-  return (
-    <div>
-      <input
-        type="text" value={privateKey}
-        onChange={({target: {value}}) => setPrivateKey(value)}/>
+function ConnectNetworkButton({
+  activatingConnector,
+  connector,
+  triedEager,
+  error,
+  setActivatingConnector,
+  activate
+}: ConnectButtonArgs) {
+  return ([name, currentConnector]: [string, AbstractConnector]) => {
+    const activating = currentConnector === activatingConnector
+    const connected = currentConnector === connector
+    const disabled = !!(!triedEager || activatingConnector || connected || error)
+
+    return (
       <button
         style={{
           height: '3rem',
           borderRadius: '1rem',
-          borderColor: activating ?
-            'orange' :
-            connected ? 'green' : 'unset',
+          borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
+          cursor: disabled ? 'unset' : 'pointer',
+          position: 'relative'
+        }}
+        disabled={disabled}
+        key={name}
+        onClick={() => {
+          setActivatingConnector(currentConnector)
+          activate(connectors[name])
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            color: 'black',
+            margin: '0 0 0 1rem'
+          }}
+        >
+          {activating && (
+            <Spinner
+              color={'black'}
+              style={{
+                height: '25%',
+                marginLeft: '-1rem'
+              }}
+            />
+          )}
+          {connected && <span role="img" aria-label="check" />}
+        </div>
+        {name}
+      </button>
+    )
+  }
+}
+
+function ConnectPrivateKeyButton({
+  activatingConnector,
+  connector,
+  triedEager,
+  error,
+  setActivatingConnector,
+  activate
+}: ConnectButtonArgs) {
+  const [privateKey, setPrivateKey] = useState('')
+  const activating = activatingConnector instanceof PrivateKeyConnector
+  const connected = connector instanceof PrivateKeyConnector
+  const disabled = !!(!triedEager || activatingConnector || connected || error)
+
+  return (
+    <div>
+      <input type="text" value={privateKey} onChange={({ target: { value } }) => setPrivateKey(value)} />
+      <button
+        style={{
+          height: '3rem',
+          borderRadius: '1rem',
+          borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
           cursor: disabled ? 'unset' : 'pointer',
           position: 'relative'
         }}
         disabled={disabled}
         onClick={() => {
           const c = new PrivateKeyConnector({
-            privateKey: privateKey.replace(/^0x/, ""),
+            privateKey: privateKey.replace(/^0x/, ''),
             chainId: 0x696c67,
             url: 'https://mainnet-rpc.ilgonwallet.com'
           })
@@ -381,11 +358,16 @@ function ConnectPrivateKeyButton(
             margin: '0 0 0 1rem'
           }}
         >
-          {activating && <Spinner color={'black'} style={{
-            height: '25%',
-            marginLeft: '-1rem'
-          }}/>}
-          {connected && <span role="img" aria-label="check"/>}
+          {activating && (
+            <Spinner
+              color={'black'}
+              style={{
+                height: '25%',
+                marginLeft: '-1rem'
+              }}
+            />
+          )}
+          {connected && <span role="img" aria-label="check" />}
         </div>
         Private key
       </button>
@@ -409,10 +391,19 @@ function App() {
   // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
   useInactiveListener(!triedEager || !!activatingConnector)
 
+  const connectButtonArgs = {
+    activatingConnector,
+    connector,
+    triedEager,
+    error,
+    setActivatingConnector,
+    activate
+  }
+
   return (
     <>
-      <Header/>
-      <hr style={{margin: '2rem'}}/>
+      <Header />
+      <hr style={{ margin: '2rem' }} />
       <div
         style={{
           display: 'grid',
@@ -422,29 +413,8 @@ function App() {
           margin: 'auto'
         }}
       >
-        {Object.entries(connectors).map(([name, currentConnector]) =>
-          ConnectNetworkButton(
-            {
-              currentConnector,
-              activatingConnector,
-              connector,
-              triedEager,
-              error,
-              name,
-              setActivatingConnector,
-              activate
-            }
-          ))}
-        {ConnectPrivateKeyButton(
-          {
-            activatingConnector,
-            connector,
-            triedEager,
-            error,
-            setActivatingConnector,
-            activate
-          }
-        )}
+        {Object.entries(connectors).map(ConnectNetworkButton(connectButtonArgs))}
+        {ConnectPrivateKeyButton(connectButtonArgs)}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {(active || error) && (
@@ -479,7 +449,7 @@ function App() {
         }}
       >
         {signMessageButton(library, account)}
-        <KillSessionButton connector={connector}/>
+        <KillSessionButton connector={connector} />
       </div>
     </>
   )
