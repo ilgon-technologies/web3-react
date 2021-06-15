@@ -4,7 +4,10 @@ import {
   NoEthereumProviderError,
   UserRejectedRequestError as UserRejectedRequestErrorInjected
 } from '@web3-react/injected-connector'
-import { UserRejectedRequestError as UserRejectedRequestErrorWalletConnect } from '@web3-react/walletconnect-connector'
+import {
+  UserRejectedRequestError as UserRejectedRequestErrorWalletConnect,
+  WalletConnectConnector
+} from '@web3-react/walletconnect-connector'
 import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
@@ -22,20 +25,14 @@ import {
   ExternalProvider,
   JsonRpcFetchFunc
 } from "@ethersproject/providers/src.ts/web3-provider";
+import {Web3ReactContextInterface} from "../../packages/core/src/types";
 
-enum ConnectorNames {
-  Injected = 'Injected',
-  WalletConnect = 'WalletConnect',
-  Ledger = 'Ledger',
-  Trezor = 'Trezor',
-}
-
-const connectorsByName: { [connectorName in ConnectorNames]: AbstractConnector } = {
-  [ConnectorNames.Injected]: injected,
-  [ConnectorNames.WalletConnect]: walletconnect,
-  [ConnectorNames.Ledger]: ledger,
-  [ConnectorNames.Trezor]: trezor,
-}
+const connectors = {
+  injected,
+  walletconnect,
+  ledger,
+  trezor,
+} as const
 
 function getErrorMessage(error: Error) {
   if (error instanceof NoEthereumProviderError) {
@@ -210,12 +207,9 @@ function Header() {
   )
 }
 
-function KillSessionButton({ connector }: { connector: AbstractConnector }) {
-  const killableConnectors: AbstractConnector[] = [
-    walletconnect,
-  ];
-  if (killableConnectors.includes(connector)) {
-    const name = Object.entries(connectorsByName).find(
+function KillSessionButton({ connector }: { connector: AbstractConnector  }) {
+  if (connector instanceof WalletConnectConnector) {
+    const name = Object.entries(connectors).find(
       ([, c]) => c === connector
     )[0];
     return (
@@ -225,7 +219,7 @@ function KillSessionButton({ connector }: { connector: AbstractConnector }) {
           borderRadius: "1rem",
           cursor: "pointer",
         }}
-        onClick={() => (connector as any).close()}
+        onClick={() => connector.close()}
       >
         Kill {name} Session
       </button>
@@ -277,12 +271,12 @@ function ConnectNetworkButton(
     setActivatingConnector,
     activate
   }: {
-    currentConnector: AbstractConnector, activatingConnector: AbstractConnector, connector: AbstractConnector, triedEager: boolean, error: Error, name: string, setActivatingConnector: (value: AbstractConnector) => void, activate: (
-      connector: AbstractConnector,
-      onError?: (error: Error) => void,
-      throwErrors?: boolean
-    ) => Promise<void>
-  }
+    currentConnector: AbstractConnector, 
+    activatingConnector: AbstractConnector, 
+    triedEager: boolean, 
+    name: string, 
+    setActivatingConnector: (c: AbstractConnector) => void
+  } & Pick<Web3ReactContextInterface<Web3Provider>, 'connector' | 'error' | 'activate'> 
 ) {
   const activating = currentConnector === activatingConnector
   const connected = currentConnector === connector
@@ -306,7 +300,7 @@ function ConnectNetworkButton(
       key={name}
       onClick={() => {
         setActivatingConnector(currentConnector)
-        activate(connectorsByName[name])
+        activate(connectors[name])
       }}
     >
       <div
@@ -341,12 +335,8 @@ function ConnectPrivateKeyButton(
     setActivatingConnector,
     activate
   }: {
-    activatingConnector: AbstractConnector, connector: AbstractConnector, triedEager: boolean, error: Error, setActivatingConnector: (value: AbstractConnector) => void, activate: (
-      connector: AbstractConnector,
-      onError?: (error: Error) => void,
-      throwErrors?: boolean
-    ) => Promise<void>
-  }
+    activatingConnector: AbstractConnector, triedEager: boolean, setActivatingConnector: (c: AbstractConnector) => void
+  } & Pick<Web3ReactContextInterface<Web3Provider>, 'connector' | 'error' | 'activate'>
 ) {
   const [privateKey, setPrivateKey] = useState('')
   const activating = activatingConnector instanceof PrivateKeyConnector
@@ -434,7 +424,7 @@ function App() {
           margin: 'auto'
         }}
       >
-        {Object.entries(connectorsByName).map(([name, currentConnector]) =>
+        {Object.entries(connectors).map(([name, currentConnector]) =>
           ConnectNetworkButton(
             {
               currentConnector,
