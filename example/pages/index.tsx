@@ -83,7 +83,7 @@ function BlockNumber() {
 
   const [blockNumber, setBlockNumber] = React.useState<number>()
   React.useEffect(() => {
-    if (!!library) {
+    if (library) {
       let stale = false
 
       library
@@ -148,7 +148,7 @@ function Balance() {
 
   const [balance, setBalance] = React.useState()
   React.useEffect(() => {
-    if (!!account && !!library) {
+    if (account && library) {
       let stale = false
 
       library
@@ -231,9 +231,7 @@ function KillSessionButton({ connector }: { connector: AbstractConnector  }) {
 
 function signMessageButton(library: Web3Provider, account: string) {
   return <>
-    {!!(
-      library && account
-    ) && (
+    {library && account && (
       <button
         style={{
           height: '3rem',
@@ -280,10 +278,10 @@ function ConnectNetworkButton(
 ) {
   const activating = currentConnector === activatingConnector
   const connected = currentConnector === connector
-  const disabled = !triedEager
-    || !!activatingConnector
+  const disabled = !!(!triedEager
+    || activatingConnector
     || connected
-    || !!error
+    || error)
 
   return (
     <button
@@ -341,10 +339,10 @@ function ConnectPrivateKeyButton(
   const [privateKey, setPrivateKey] = useState('')
   const activating = activatingConnector instanceof PrivateKeyConnector
   const connected = connector instanceof PrivateKeyConnector
-  const disabled = !triedEager
-    || !!activatingConnector
+  const disabled = !!(!triedEager
+    || activatingConnector
     || connected
-    || !!error
+    || error)
 
   return (
     <div>
@@ -466,7 +464,7 @@ function App() {
           </button>
         )}
 
-        {!!error && <h4 style={{ marginTop: '1rem', marginBottom: '0' }}>{getErrorMessage(error)}</h4>}
+        {error && <h4 style={{ marginTop: '1rem', marginBottom: '0' }}>{getErrorMessage(error)}</h4>}
       </div>
 
       <hr style={{ margin: '2rem' }} />
