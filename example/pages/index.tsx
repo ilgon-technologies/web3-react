@@ -344,7 +344,8 @@ function ConnectPrivateKeyButton({
             chainId: 0x696c67,
             url: 'https://mainnet-rpc.ilgonwallet.com'
           })
-          activate(c).then(() => setActivatingConnector(c))
+          setActivatingConnector(c)
+          activate(c)
         }}
       >
         <div
