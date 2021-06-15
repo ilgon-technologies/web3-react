@@ -18,6 +18,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 import { PrivateKeyConnector } from '../private-key-connector'
 import { ExternalProvider, JsonRpcFetchFunc } from '@ethersproject/providers/src.ts/web3-provider'
 import { Web3ReactContextInterface } from '../../packages/core/src/types'
+import { BigNumber } from '@ethersproject/bignumber'
 
 const connectors = {
   injected,
@@ -71,7 +72,7 @@ function ChainId() {
 }
 
 function BlockNumber() {
-  const { chainId, library } = useWeb3React()
+  const { chainId, library } = useWeb3React<Web3Provider>()
 
   const [blockNumber, setBlockNumber] = React.useState<number>()
   React.useEffect(() => {
@@ -136,9 +137,9 @@ function Account() {
 }
 
 function Balance() {
-  const { account, library, chainId } = useWeb3React()
+  const { account, library, chainId } = useWeb3React<Web3Provider>()
 
-  const [balance, setBalance] = React.useState()
+  const [balance, setBalance] = React.useState<BigNumber>()
   React.useEffect(() => {
     if (account && library) {
       let stale = false
