@@ -18,6 +18,10 @@ import {
 import { Spinner } from '../components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { PrivateKeyConnector } from "../private-key-connector";
+import {
+  ExternalProvider,
+  JsonRpcFetchFunc
+} from "@ethersproject/providers/src.ts/web3-provider";
 
 enum ConnectorNames {
   Injected = 'Injected',
@@ -26,7 +30,7 @@ enum ConnectorNames {
   Trezor = 'Trezor',
 }
 
-const connectorsByName: { [connectorName in ConnectorNames]: any } = {
+const connectorsByName: { [connectorName in ConnectorNames]: AbstractConnector } = {
   [ConnectorNames.Injected]: injected,
   [ConnectorNames.WalletConnect]: walletconnect,
   [ConnectorNames.Ledger]: ledger,
@@ -49,7 +53,7 @@ function getErrorMessage(error: Error) {
   }
 }
 
-function getLibrary(provider: any): Web3Provider {
+function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc): Web3Provider {
   const library = new Web3Provider(provider)
   library.pollingInterval = 12000
   return library
@@ -81,7 +85,7 @@ function BlockNumber() {
   const { chainId, library } = useWeb3React()
 
   const [blockNumber, setBlockNumber] = React.useState<number>()
-  React.useEffect((): any => {
+  React.useEffect(() => {
     if (!!library) {
       let stale = false
 
@@ -146,13 +150,13 @@ function Balance() {
   const { account, library, chainId } = useWeb3React()
 
   const [balance, setBalance] = React.useState()
-  React.useEffect((): any => {
+  React.useEffect(() => {
     if (!!account && !!library) {
       let stale = false
 
       library
         .getBalance(account)
-        .then((balance: any) => {
+        .then((balance) => {
           if (!stale) {
             setBalance(balance)
           }
@@ -246,10 +250,10 @@ function signMessageButton(library: Web3Provider, account: string) {
           library
             .getSigner(account)
             .signMessage('👋')
-            .then((signature: any) => {
+            .then((signature) => {
               window.alert(`Success!\n\n${signature}`)
             })
-            .catch((error: any) => {
+            .catch((error) => {
               window.alert('Failure!' + (
                 error && error.message ? `\n\n${error.message}` : ''
               ))
@@ -273,7 +277,7 @@ function ConnectNetworkButton(
     setActivatingConnector,
     activate
   }: {
-    currentConnector: any, activatingConnector: any, connector: AbstractConnector, triedEager: boolean, error: Error, name: string, setActivatingConnector: (value: any) => void, activate: (
+    currentConnector: AbstractConnector, activatingConnector: AbstractConnector, connector: AbstractConnector, triedEager: boolean, error: Error, name: string, setActivatingConnector: (value: AbstractConnector) => void, activate: (
       connector: AbstractConnector,
       onError?: (error: Error) => void,
       throwErrors?: boolean
@@ -337,7 +341,7 @@ function ConnectPrivateKeyButton(
     setActivatingConnector,
     activate
   }: {
-    activatingConnector: AbstractConnector, connector: AbstractConnector, triedEager: boolean, error: Error, setActivatingConnector: (value: any) => void, activate: (
+    activatingConnector: AbstractConnector, connector: AbstractConnector, triedEager: boolean, error: Error, setActivatingConnector: (value: AbstractConnector) => void, activate: (
       connector: AbstractConnector,
       onError?: (error: Error) => void,
       throwErrors?: boolean
@@ -404,7 +408,7 @@ function ConnectPrivateKeyButton(
 function App() {
   const { connector, library, account, activate, deactivate, active, error } = useWeb3React<Web3Provider>()
   // handle logic to recognize the connector currently being activated
-  const [activatingConnector, setActivatingConnector] = React.useState<any>()
+  const [activatingConnector, setActivatingConnector] = React.useState<AbstractConnector>()
   React.useEffect(() => {
     if (activatingConnector && activatingConnector === connector) {
       setActivatingConnector(undefined)
