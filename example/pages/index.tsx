@@ -12,7 +12,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
 import { useEagerConnect, useInactiveListener } from '../hooks'
-import { injected, ledger, trezor, walletconnect } from '../connectors'
+import { getWallet, injected, ledger, mnemonicToPk, trezor, walletconnect } from '../connectors'
 import { Spinner } from '../components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { PrivateKeyConnector } from '../private-key-connector'
@@ -313,6 +313,171 @@ function ConnectNetworkButton({
   }
 }
 
+function ConnectMnemonicButton({
+  activatingConnector,
+  connector,
+  triedEager,
+  error,
+  setActivatingConnector,
+  activate
+}: ConnectButtonArgs) {
+  const [mnemonic, setMnemonic] = useState('')
+  const [password, setPassword] = useState('')
+  const activating = activatingConnector instanceof PrivateKeyConnector
+  const connected = connector instanceof PrivateKeyConnector
+  const disabled = !!(!triedEager || activatingConnector || connected || error)
+
+  return (
+    <div>
+      <textarea
+        style={{ width: '100%' }}
+        value={mnemonic}
+        onChange={e => setMnemonic(e.target.value)}
+        placeholder="Mnemonic"
+      />
+
+      <div style={{ display: 'flex' }}>
+        <input
+          style={{ width: '100%' }}
+          type="text"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        <button
+          style={{
+            height: '3rem',
+            borderRadius: '1rem',
+            borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
+            cursor: disabled ? 'unset' : 'pointer',
+            position: 'relative'
+          }}
+          disabled={disabled}
+          onClick={() => {
+            const privateKey = mnemonicToPk(mnemonic, password)
+            const c = new PrivateKeyConnector({
+              privateKey,
+              chainId: 0x696c67,
+              url: 'https://mainnet-rpc.ilgonwallet.com'
+            })
+            setActivatingConnector(c)
+            activate(c)
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              color: 'black',
+              margin: '0 0 0 1rem'
+            }}
+          >
+            {activating && (
+              <Spinner
+                color={'black'}
+                style={{
+                  height: '25%',
+                  marginLeft: '-1rem'
+                }}
+              />
+            )}
+            {connected && <span role="img" aria-label="check" />}
+          </div>
+          Private key
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ConnectKeyStoreButton({
+  activatingConnector,
+  connector,
+  triedEager,
+  error,
+  setActivatingConnector,
+  activate
+}: ConnectButtonArgs) {
+  const [selectedFile, setSelectedFile] = useState('')
+  const [password, setPassword] = useState('')
+  const activating = activatingConnector instanceof PrivateKeyConnector
+  const connected = connector instanceof PrivateKeyConnector
+  const disabled = !!(!triedEager || activatingConnector || connected || error)
+
+  return (
+    <div style={{ display: 'flex' }}>
+      <input
+        style={{ width: '100%' }}
+        type="password"
+        placeholder="password"
+        value={password}
+        onChange={({ target: { value } }) => setPassword(value)}
+      />
+      <input
+        type="file"
+        style={{
+          height: '3rem',
+          borderRadius: '1rem',
+          borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
+          cursor: disabled ? 'unset' : 'pointer',
+          position: 'relative'
+        }}
+        disabled={disabled}
+        value={selectedFile}
+        onChange={event => {
+          event.preventDefault();
+          setSelectedFile(event.target.value)
+          event.target.files[0]
+            .text()
+            .then(text => JSON.parse(text))
+            .then(o => getWallet(o as any, password))
+            .then(wallet => wallet.getPrivateKeyString())
+            .then(privateKey => {
+              const c = new PrivateKeyConnector({
+                privateKey: privateKey.replace(/^0x/, ''),
+                chainId: 0x696c67,
+                url: 'https://mainnet-rpc.ilgonwallet.com'
+              })
+              setActivatingConnector(c)
+              activate(c)
+            })
+            .catch(e => {
+              setSelectedFile('')
+              throw e
+            })
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: '0',
+          left: '0',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          color: 'black',
+          margin: '0 0 0 1rem'
+        }}
+      >
+        {activating && (
+          <Spinner
+            color={'black'}
+            style={{
+              height: '25%',
+              marginLeft: '-1rem'
+            }}
+          />
+        )}
+        {connected && <span role="img" aria-label="check" />}
+      </div>
+    </div>
+  )
+}
+
 function ConnectPrivateKeyButton({
   activatingConnector,
   connector,
@@ -327,8 +492,13 @@ function ConnectPrivateKeyButton({
   const disabled = !!(!triedEager || activatingConnector || connected || error)
 
   return (
-    <div style={{display: 'flex'}}>
-      <input style={{width: '100%'}} type="text" value={privateKey} onChange={({ target: { value } }) => setPrivateKey(value)} />
+    <div style={{ display: 'flex' }}>
+      <input
+        style={{ width: '100%' }}
+        type="text"
+        value={privateKey}
+        onChange={({ target: { value } }) => setPrivateKey(value)}
+      />
       <button
         style={{
           height: '3rem',
@@ -417,6 +587,8 @@ function App() {
       >
         {Object.entries(connectors).map(ConnectNetworkButton(connectButtonArgs))}
         {ConnectPrivateKeyButton(connectButtonArgs)}
+        {ConnectMnemonicButton(connectButtonArgs)}
+        {ConnectKeyStoreButton(connectButtonArgs)}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {(active || error) && (
