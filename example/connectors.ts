@@ -36,7 +36,7 @@ export async function getWallet(jsonfile: Record<string, unknown>, password: str
   if (jsonfile.encseed != null) {
     return Wallet.fromEthSale(jsonfile as any, password)
   } else if (jsonfile.crypto != null) {
-    return await Wallet.fromV3(jsonfile as any, password, true)
+    return Wallet.fromV3(jsonfile as any, password, true)
   } else if (jsonfile.hash != null) {
     return thirdparty.fromEtherWallet(jsonfile as any, password)
   } else if (jsonfile.publisher == 'MyEtherWallet') {
