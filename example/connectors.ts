@@ -13,6 +13,8 @@ function toHexStr(uint8Arr: Uint8Array) {
 export function mnemonicToPk(mnemonic: string, password: string) {
   const basePath = "m/44'/60'/0'/0"
   const index = 0
+  if (!bip39.validateMnemonic(mnemonic))
+    throw new Error("Invalid mnemonic!")
   const hdKey = HDKey.fromMasterSeed(bip39.mnemonicToSeedSync(mnemonic, password))
   return toHexStr(hdKey.derive(basePath + '/' + index).privateKey)
 }
