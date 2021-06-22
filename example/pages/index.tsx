@@ -387,7 +387,7 @@ function ConnectMnemonicButton({
             )}
             {connected && <span role="img" aria-label="check" />}
           </div>
-          Private key
+          mnemonic
         </button>
       </div>
     </div>
@@ -417,6 +417,7 @@ function ConnectKeyStoreButton({
         value={password}
         onChange={({ target: { value } }) => setPassword(value)}
       />
+      <label htmlFor="file" id="file">Choose keystore</label>
       <input
         type="file"
         style={{
@@ -541,7 +542,7 @@ function ConnectPrivateKeyButton({
           )}
           {connected && <span role="img" aria-label="check" />}
         </div>
-        Private key
+        private key
       </button>
     </div>
   )
