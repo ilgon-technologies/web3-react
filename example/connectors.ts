@@ -26,7 +26,7 @@ const fromMyEtherWalletV2 = json => {
   if (json.privKey.length !== 64) {
     throw new Error('Invalid private key length')
   }
-  return new Wallet(new Buffer(json.privKey, 'hex'))
+  return new Wallet(Buffer.from(json.privKey, 'hex'))
 }
 
 export async function getWallet(jsonfile: Record<string, unknown>, password: string) {
