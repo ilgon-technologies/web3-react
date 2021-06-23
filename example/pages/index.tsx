@@ -12,7 +12,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
 import { useEagerConnect, useInactiveListener } from '../hooks'
-import { getWallet, injected, ledger, mnemonicToPk, trezor, walletconnect } from '../connectors'
+import { getWallet, injected, ledger, MAINNET, mnemonicToPk, trezor, walletconnect } from '../connectors'
 import { Spinner } from '../components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { PrivateKeyConnector } from '../private-key-connector'
@@ -357,8 +357,7 @@ function ConnectMnemonicButton({
             const privateKey = mnemonicToPk(mnemonic, password)
             const c = new PrivateKeyConnector({
               privateKey,
-              chainId: 0x696c67,
-              url: 'https://mainnet-rpc.ilgonwallet.com'
+              ...MAINNET
             })
             setActivatingConnector(c)
             activate(c)
@@ -440,8 +439,7 @@ function ConnectKeyStoreButton({
             .then(privateKey => {
               const c = new PrivateKeyConnector({
                 privateKey: privateKey.replace(/^0x/, ''),
-                chainId: 0x696c67,
-                url: 'https://mainnet-rpc.ilgonwallet.com'
+                ...MAINNET
               })
               setActivatingConnector(c)
               activate(c)
@@ -512,8 +510,7 @@ function ConnectPrivateKeyButton({
         onClick={() => {
           const c = new PrivateKeyConnector({
             privateKey: privateKey.replace(/^0x/, ''),
-            chainId: 0x696c67,
-            url: 'https://mainnet-rpc.ilgonwallet.com'
+            ...MAINNET
           })
           setActivatingConnector(c)
           activate(c)

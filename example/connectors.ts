@@ -10,6 +10,11 @@ function toHexStr(uint8Arr: Uint8Array) {
   return Buffer.from(uint8Arr).toString('hex')
 }
 
+export const MAINNET = {
+  chainId: 0x696c67,
+  url: 'https://mainnet-rpc.ilgonwallet.com'
+}
+
 export function mnemonicToPk(mnemonic: string, password: string) {
   const basePath = "m/44'/60'/0'/0"
   const index = 0
@@ -49,24 +54,19 @@ export async function getWallet(jsonfile: Record<string, unknown>, password: str
 }
 
 const POLLING_INTERVAL = 12000
-const RPC_URLS: { [chainId: number]: string } = {
-  1: process.env.RPC_URL_1,
-  4: process.env.RPC_URL_4
-}
 
-export const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] })
+export const injected = new InjectedConnector({ supportedChainIds: [MAINNET.chainId] })
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: { 1: RPC_URLS[1], 4: RPC_URLS[4] },
+  rpc: { [MAINNET.chainId]: MAINNET.url },
   qrcode: true,
   pollingInterval: POLLING_INTERVAL
 })
 
-export const ledger = new LedgerConnector({ chainId: 1, url: RPC_URLS[1], pollingInterval: POLLING_INTERVAL })
+export const ledger = new LedgerConnector({ ...MAINNET, pollingInterval: POLLING_INTERVAL })
 
 export const trezor = new TrezorConnector({
-  chainId: 1,
-  url: RPC_URLS[1],
+  ...MAINNET,
   pollingInterval: POLLING_INTERVAL,
   manifestEmail: 'dummy@abc.xyz',
   manifestAppUrl: 'http://localhost:1234'
