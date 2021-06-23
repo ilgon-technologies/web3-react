@@ -416,7 +416,9 @@ function ConnectKeyStoreButton({
         value={password}
         onChange={({ target: { value } }) => setPassword(value)}
       />
-      <label htmlFor="file" id="file">Choose keystore</label>
+      <label htmlFor="file" id="file">
+        Choose keystore
+      </label>
       <input
         type="file"
         style={{
@@ -429,7 +431,7 @@ function ConnectKeyStoreButton({
         disabled={disabled}
         value={selectedFile}
         onChange={event => {
-          event.preventDefault();
+          event.preventDefault()
           setSelectedFile(event.target.value)
           event.target.files[0]
             .text()
@@ -578,7 +580,7 @@ function App() {
         style={{
           display: 'grid',
           gridGap: '1rem',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: '1fr 1fr'
         }}
       >
         {Object.entries(connectors).map(ConnectNetworkButton(connectButtonArgs))}
