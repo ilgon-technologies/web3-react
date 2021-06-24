@@ -56,7 +56,7 @@ export async function getWallet(jsonfile: Record<string, unknown>, password: str
 
 const POLLING_INTERVAL = 12000
 
-export const injected = new InjectedConnector({ supportedChainIds: [MAINNET.chainId] })
+export const injected = new InjectedConnector({})
 
 export const walletconnect = new WalletConnectConnector({
   rpc: { [MAINNET.chainId]: MAINNET.url },
