@@ -7,7 +7,11 @@ export default class Root extends App {
   componentDidMount() {
     const showError = alert
     window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
-      showError(e.reason.message)
+      const message = e.reason.message;
+      // web3-provider-engine causes it and couldn't find why
+      if (message !== 'Callback was already called.') {
+        showError(message)
+      }
     })
     window.onerror = function myErrorHandler(errorMsg) {
       showError(errorMsg)
