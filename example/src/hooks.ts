@@ -3,6 +3,23 @@ import { useWeb3React } from '@web3-react/core'
 
 import { injected } from './connectors'
 
+export function useShowUnhandledErrors() {
+  useEffect(() => {
+    const showError = alert
+    window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
+      const message = e.reason.message;
+      // web3-provider-engine causes it and couldn't find why
+      if (message !== 'Callback was already called.') {
+        showError(message)
+      }
+    })
+    window.onerror = function myErrorHandler(errorMsg) {
+      showError(errorMsg)
+      return false
+    }
+  }, [])
+}
+
 export function useEagerConnect() {
   const { activate, active } = useWeb3React()
 

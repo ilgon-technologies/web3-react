@@ -1,14 +1,18 @@
 {
   "name": "web3-react-example",
   "scripts": {
-    "start": "next",
-    "build": "next build && next export"
+    "start": "react-scripts start",
+    "build": "react-scripts build"
   },
   "dependencies": {
     "@0x/subproviders": "^6.5.3",
     "@ethersproject/bignumber": "^5.3.0",
     "@ethersproject/providers": "^5.1.2",
     "@ethersproject/units": "^5.1.0",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^15.12.5",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
     "@web3-react/abstract-connector": "latest",
     "@web3-react/core": "latest",
     "@web3-react/injected-connector": "latest",
@@ -19,9 +23,27 @@
     "bip39": "^3.0.4",
     "ethereumjs-wallet": "^1.0.1",
     "hdkey": "^2.0.1",
-    "next": "^9.2.1",
     "react": ">=16.8",
     "react-dom": ">=16.8",
-    "typescript": "^3.7.5"
+    "react-scripts": "^4.0.3",
+    "typescript": "4.3.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core'
 import {
   NoEthereumProviderError,
@@ -11,11 +11,11 @@ import {
 import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
-import { useEagerConnect, useInactiveListener } from '../hooks'
-import { getWallet, injected, ledger, MAINNET, mnemonicToPk, trezor, walletconnect } from '../connectors'
-import { Spinner } from '../components/Spinner'
+import {useEagerConnect, useInactiveListener, useShowUnhandledErrors} from './hooks'
+import { getWallet, injected, ledger, MAINNET, mnemonicToPk, trezor, walletconnect } from './connectors'
+import { Spinner } from './components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import { PrivateKeyConnector } from '../private-key-connector'
+import { PrivateKeyConnector } from './private-key-connector'
 import { ExternalProvider, JsonRpcFetchFunc } from '@ethersproject/providers/src.ts/web3-provider'
 import { Web3ReactContextInterface } from '../../packages/core/src/types'
 import { BigNumber } from '@ethersproject/bignumber'
@@ -50,6 +50,7 @@ function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc): Web3Provider
 }
 
 export default function() {
+  useShowUnhandledErrors()
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <App />
@@ -176,7 +177,7 @@ function Balance() {
 }
 
 function Header() {
-  const { active, error } = useWeb3React()
+  const { active, error  } = useWeb3React()
 
   return (
     <>
