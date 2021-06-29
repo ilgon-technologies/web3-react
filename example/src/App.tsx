@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState} from 'react'
 import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core'
 import {
   NoEthereumProviderError,
