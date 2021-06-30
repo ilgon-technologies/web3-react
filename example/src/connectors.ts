@@ -28,7 +28,7 @@ export function mnemonicToPk(mnemonic: string, password: string) {
 const mapKeys = (f: (s: string) => string) => <V>(r: Record<string, V>) =>
   Object.fromEntries(Object.entries(r).map(([k, v]) => [f(k), v]))
 
-const fromMyEtherWalletV2 = json => {
+const fromMyEtherWalletV2 = (json: Record<string, any>) => {
   if (json.privKey.length !== 64) {
     throw new Error('Invalid private key length')
   }

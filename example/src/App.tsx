@@ -75,7 +75,7 @@ function ChainId() {
 function BlockNumber() {
   const { chainId, library } = useWeb3React<Web3Provider>()
 
-  const [blockNumber, setBlockNumber] = React.useState<number>()
+  const [blockNumber, setBlockNumber] = React.useState<number | null>()
   React.useEffect(() => {
     if (library) {
       let stale = false
@@ -140,7 +140,7 @@ function Account() {
 function Balance() {
   const { account, library, chainId } = useWeb3React<Web3Provider>()
 
-  const [balance, setBalance] = React.useState<BigNumber>()
+  const [balance, setBalance] = React.useState<BigNumber | null>()
   React.useEffect(() => {
     if (account && library) {
       let stale = false
@@ -201,9 +201,9 @@ function Header() {
   )
 }
 
-function KillSessionButton({ connector }: { connector: AbstractConnector }) {
+function KillSessionButton({ connector }: { connector?: AbstractConnector }) {
   if (connector instanceof WalletConnectConnector) {
-    const name = Object.entries(connectors).find(([, c]) => c === connector)[0]
+    const name = Object.entries(connectors).find(([, c]) => c === connector)![0]
     return (
       <button
         style={{
@@ -221,7 +221,7 @@ function KillSessionButton({ connector }: { connector: AbstractConnector }) {
   }
 }
 
-function signMessageButton(library: Web3Provider, account: string) {
+function signMessageButton(library: Web3Provider | undefined, account: string | null | undefined) {
   return (
     <>
       {library && account && (
@@ -251,7 +251,7 @@ function signMessageButton(library: Web3Provider, account: string) {
 }
 
 type ConnectButtonArgs = {
-  activatingConnector: AbstractConnector
+  activatingConnector?: AbstractConnector
   triedEager: boolean
   setActivatingConnector: (c: AbstractConnector) => void
 } & Pick<Web3ReactContextInterface<Web3Provider>, 'connector' | 'error' | 'activate'>
@@ -282,7 +282,7 @@ function ConnectNetworkButton({
         key={name}
         onClick={() => {
           setActivatingConnector(currentConnector)
-          activate(connectors[name])
+          activate(currentConnector)
         }}
       >
         <div
@@ -434,7 +434,7 @@ function ConnectKeyStoreButton({
         onChange={event => {
           event.preventDefault()
           setSelectedFile(event.target.value)
-          event.target.files[0]
+          event.target.files![0]
             .text()
             .then(text => JSON.parse(text))
             .then(o => getWallet(o as any, password))
