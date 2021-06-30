@@ -11,8 +11,8 @@ function toHexStr(uint8Arr: Uint8Array) {
 }
 
 export const MAINNET = {
-  chainId: 0x696c67,
-  url: 'https://mainnet-rpc.ilgonwallet.com',
+  chainId: 0x696c6774,
+  url: 'https://testnet-rpc.ilgonwallet.com',
 }
 
 export function mnemonicToPk(mnemonic: string, password: string) {
