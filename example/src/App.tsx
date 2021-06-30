@@ -1,17 +1,17 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core'
 import {
   NoEthereumProviderError,
-  UserRejectedRequestError as UserRejectedRequestErrorInjected
+  UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from '@web3-react/injected-connector'
 import {
   UserRejectedRequestError as UserRejectedRequestErrorWalletConnect,
-  WalletConnectConnector
+  WalletConnectConnector,
 } from '@web3-react/walletconnect-connector'
 import { Web3Provider } from '@ethersproject/providers'
 import { formatEther } from '@ethersproject/units'
 
-import {useEagerConnect, useInactiveListener, useShowUnhandledErrors} from './hooks'
+import { useEagerConnect, useInactiveListener, useShowUnhandledErrors } from './hooks'
 import { getWallet, injected, ledger, MAINNET, mnemonicToPk, trezor, walletconnect } from './connectors'
 import { Spinner } from './components/Spinner'
 import { AbstractConnector } from '@web3-react/abstract-connector'
@@ -24,7 +24,7 @@ const connectors = {
   injected,
   walletconnect,
   ledger,
-  trezor
+  trezor,
 } as const
 
 function getErrorMessage(error: Error) {
@@ -49,7 +49,7 @@ function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc): Web3Provider
   return library
 }
 
-export default function() {
+export default function () {
   useShowUnhandledErrors()
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
@@ -147,7 +147,7 @@ function Balance() {
 
       library
         .getBalance(account)
-        .then(balance => {
+        .then((balance) => {
           if (!stale) {
             setBalance(balance)
           }
@@ -177,7 +177,7 @@ function Balance() {
 }
 
 function Header() {
-  const { active, error  } = useWeb3React()
+  const { active, error } = useWeb3React()
 
   return (
     <>
@@ -189,7 +189,7 @@ function Header() {
           gridTemplateColumns: '1fr min-content 1fr',
           maxWidth: '20rem',
           lineHeight: '2rem',
-          margin: 'auto'
+          margin: 'auto',
         }}
       >
         <ChainId />
@@ -209,7 +209,7 @@ function KillSessionButton({ connector }: { connector?: AbstractConnector }) {
         style={{
           height: '3rem',
           borderRadius: '1rem',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
         onClick={() => connector.close()}
       >
@@ -229,16 +229,16 @@ function signMessageButton(library: Web3Provider | undefined, account: string | 
           style={{
             height: '3rem',
             borderRadius: '1rem',
-            cursor: 'pointer'
+            cursor: 'pointer',
           }}
           onClick={() => {
             library
               .getSigner(account)
               .signMessage('👋')
-              .then(signature => {
+              .then((signature) => {
                 window.alert(`Success!\n\n${signature}`)
               })
-              .catch(error => {
+              .catch((error) => {
                 window.alert('Failure!' + (error && error.message ? `\n\n${error.message}` : ''))
               })
           }}
@@ -262,7 +262,7 @@ function ConnectNetworkButton({
   triedEager,
   error,
   setActivatingConnector,
-  activate
+  activate,
 }: ConnectButtonArgs) {
   return ([name, currentConnector]: [string, AbstractConnector]) => {
     const activating = currentConnector === activatingConnector
@@ -276,7 +276,7 @@ function ConnectNetworkButton({
           borderRadius: '1rem',
           borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
           cursor: disabled ? 'unset' : 'pointer',
-          position: 'relative'
+          position: 'relative',
         }}
         disabled={disabled}
         key={name}
@@ -294,7 +294,7 @@ function ConnectNetworkButton({
             display: 'flex',
             alignItems: 'center',
             color: 'black',
-            margin: '0 0 0 1rem'
+            margin: '0 0 0 1rem',
           }}
         >
           {activating && (
@@ -302,7 +302,7 @@ function ConnectNetworkButton({
               color={'black'}
               style={{
                 height: '25%',
-                marginLeft: '-1rem'
+                marginLeft: '-1rem',
               }}
             />
           )}
@@ -320,7 +320,7 @@ function ConnectMnemonicButton({
   triedEager,
   error,
   setActivatingConnector,
-  activate
+  activate,
 }: ConnectButtonArgs) {
   const [mnemonic, setMnemonic] = useState('')
   const [password, setPassword] = useState('')
@@ -333,7 +333,7 @@ function ConnectMnemonicButton({
       <textarea
         style={{ width: '100%' }}
         value={mnemonic}
-        onChange={e => setMnemonic(e.target.value)}
+        onChange={(e) => setMnemonic(e.target.value)}
         placeholder="Mnemonic"
       />
 
@@ -342,7 +342,7 @@ function ConnectMnemonicButton({
           style={{ width: '100%' }}
           type="text"
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
         <button
@@ -351,14 +351,14 @@ function ConnectMnemonicButton({
             borderRadius: '1rem',
             borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
             cursor: disabled ? 'unset' : 'pointer',
-            position: 'relative'
+            position: 'relative',
           }}
           disabled={disabled}
           onClick={() => {
             const privateKey = mnemonicToPk(mnemonic, password)
             const c = new PrivateKeyConnector({
               privateKey,
-              ...MAINNET
+              ...MAINNET,
             })
             setActivatingConnector(c)
             activate(c)
@@ -373,7 +373,7 @@ function ConnectMnemonicButton({
               display: 'flex',
               alignItems: 'center',
               color: 'black',
-              margin: '0 0 0 1rem'
+              margin: '0 0 0 1rem',
             }}
           >
             {activating && (
@@ -381,7 +381,7 @@ function ConnectMnemonicButton({
                 color={'black'}
                 style={{
                   height: '25%',
-                  marginLeft: '-1rem'
+                  marginLeft: '-1rem',
                 }}
               />
             )}
@@ -400,7 +400,7 @@ function ConnectKeyStoreButton({
   triedEager,
   error,
   setActivatingConnector,
-  activate
+  activate,
 }: ConnectButtonArgs) {
   const [selectedFile, setSelectedFile] = useState('')
   const [password, setPassword] = useState('')
@@ -427,27 +427,27 @@ function ConnectKeyStoreButton({
           borderRadius: '1rem',
           borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
           cursor: disabled ? 'unset' : 'pointer',
-          position: 'relative'
+          position: 'relative',
         }}
         disabled={disabled}
         value={selectedFile}
-        onChange={event => {
+        onChange={(event) => {
           event.preventDefault()
           setSelectedFile(event.target.value)
-          event.target.files![0]
-            .text()
-            .then(text => JSON.parse(text))
-            .then(o => getWallet(o as any, password))
-            .then(wallet => wallet.getPrivateKeyString())
-            .then(privateKey => {
+          event.target
+            .files![0].text()
+            .then((text) => JSON.parse(text))
+            .then((o) => getWallet(o as any, password))
+            .then((wallet) => wallet.getPrivateKeyString())
+            .then((privateKey) => {
               const c = new PrivateKeyConnector({
                 privateKey: privateKey.replace(/^0x/, ''),
-                ...MAINNET
+                ...MAINNET,
               })
               setActivatingConnector(c)
               activate(c)
             })
-            .catch(e => {
+            .catch((e) => {
               setSelectedFile('')
               throw e
             })
@@ -462,7 +462,7 @@ function ConnectKeyStoreButton({
           display: 'flex',
           alignItems: 'center',
           color: 'black',
-          margin: '0 0 0 1rem'
+          margin: '0 0 0 1rem',
         }}
       >
         {activating && (
@@ -470,7 +470,7 @@ function ConnectKeyStoreButton({
             color={'black'}
             style={{
               height: '25%',
-              marginLeft: '-1rem'
+              marginLeft: '-1rem',
             }}
           />
         )}
@@ -486,7 +486,7 @@ function ConnectPrivateKeyButton({
   triedEager,
   error,
   setActivatingConnector,
-  activate
+  activate,
 }: ConnectButtonArgs) {
   const [privateKey, setPrivateKey] = useState('')
   const activating = activatingConnector instanceof PrivateKeyConnector
@@ -507,13 +507,13 @@ function ConnectPrivateKeyButton({
           borderRadius: '1rem',
           borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
           cursor: disabled ? 'unset' : 'pointer',
-          position: 'relative'
+          position: 'relative',
         }}
         disabled={disabled}
         onClick={() => {
           const c = new PrivateKeyConnector({
             privateKey: privateKey.replace(/^0x/, ''),
-            ...MAINNET
+            ...MAINNET,
           })
           setActivatingConnector(c)
           activate(c)
@@ -528,7 +528,7 @@ function ConnectPrivateKeyButton({
             display: 'flex',
             alignItems: 'center',
             color: 'black',
-            margin: '0 0 0 1rem'
+            margin: '0 0 0 1rem',
           }}
         >
           {activating && (
@@ -536,7 +536,7 @@ function ConnectPrivateKeyButton({
               color={'black'}
               style={{
                 height: '25%',
-                marginLeft: '-1rem'
+                marginLeft: '-1rem',
               }}
             />
           )}
@@ -570,7 +570,7 @@ function App() {
     triedEager,
     error,
     setActivatingConnector,
-    activate
+    activate,
   }
 
   return (
@@ -581,7 +581,7 @@ function App() {
         style={{
           display: 'grid',
           gridGap: '1rem',
-          gridTemplateColumns: '1fr 1fr'
+          gridTemplateColumns: '1fr 1fr',
         }}
       >
         {Object.entries(connectors).map(ConnectNetworkButton(connectButtonArgs))}
@@ -597,7 +597,7 @@ function App() {
               marginTop: '2rem',
               borderRadius: '1rem',
               borderColor: 'red',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
             onClick={() => {
               deactivate()
@@ -618,7 +618,7 @@ function App() {
           gridGap: '1rem',
           gridTemplateColumns: 'fit-content',
           maxWidth: '20rem',
-          margin: 'auto'
+          margin: 'auto',
         }}
       >
         {signMessageButton(library, account)}
