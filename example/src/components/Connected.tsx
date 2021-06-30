@@ -6,6 +6,7 @@ import { formatEther } from '@ethersproject/units'
 
 import { ethers } from 'ethers'
 import stakingAbi from '../stakingAbi'
+import {MAINNET} from "../connectors";
 
 function Header() {
   function ChainId() {
@@ -156,7 +157,11 @@ function ShowNumberOfVaults({ contractInstance }: { contractInstance: ethers.Con
   const [vaults, setVaults] = useState<number | null>(null)
 
   useEffect(() => {
-    contractInstance.getVaultsLength(account).then((len: ethers.BigNumber) => setVaults(len.toNumber()))
+    if (chainId === MAINNET.chainId) {
+      contractInstance.getVaultsLength(account).then((len: ethers.BigNumber) => setVaults(len.toNumber()))
+    } else {
+      setVaults(null);
+    }
   }, [chainId, account, contractInstance])
 
   return <div>Number of vaults is: {vaults}</div>
