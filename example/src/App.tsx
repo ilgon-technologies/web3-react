@@ -181,17 +181,8 @@ function Header() {
 
   return (
     <>
-      <h1 style={{ margin: '1rem', textAlign: 'right' }}>{active ? '🟢' : error ? '🔴' : '🟠'}</h1>
-      <h3
-        style={{
-          display: 'grid',
-          gridGap: '1rem',
-          gridTemplateColumns: '1fr min-content 1fr',
-          maxWidth: '20rem',
-          lineHeight: '2rem',
-          margin: 'auto',
-        }}
-      >
+      <h1>{active ? '🟢' : error ? '🔴' : '🟠'}</h1>
+      <h3>
         <ChainId />
         <BlockNumber />
         <Account />
@@ -204,18 +195,7 @@ function Header() {
 function KillSessionButton({ connector }: { connector?: AbstractConnector }) {
   if (connector instanceof WalletConnectConnector) {
     const name = Object.entries(connectors).find(([, c]) => c === connector)![0]
-    return (
-      <button
-        style={{
-          height: '3rem',
-          borderRadius: '1rem',
-          cursor: 'pointer',
-        }}
-        onClick={() => connector.close()}
-      >
-        Kill {name} Session
-      </button>
-    )
+    return <button onClick={() => connector.close()}>Kill {name} Session</button>
   } else {
     return null
   }
@@ -226,11 +206,6 @@ function signMessageButton(library: Web3Provider | undefined, account: string | 
     <>
       {library && account && (
         <button
-          style={{
-            height: '3rem',
-            borderRadius: '1rem',
-            cursor: 'pointer',
-          }}
           onClick={() => {
             library
               .getSigner(account)
@@ -271,13 +246,6 @@ function ConnectNetworkButton({
 
     return (
       <button
-        style={{
-          height: '3rem',
-          borderRadius: '1rem',
-          borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
-          cursor: disabled ? 'unset' : 'pointer',
-          position: 'relative',
-        }}
         disabled={disabled}
         key={name}
         onClick={() => {
@@ -285,27 +253,8 @@ function ConnectNetworkButton({
           activate(currentConnector)
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            color: 'black',
-            margin: '0 0 0 1rem',
-          }}
-        >
-          {activating && (
-            <Spinner
-              color={'black'}
-              style={{
-                height: '25%',
-                marginLeft: '-1rem',
-              }}
-            />
-          )}
+        <div>
+          {activating && <Spinner color={'black'} />}
           {connected && <span role="img" aria-label="check" />}
         </div>
         {name}
@@ -330,29 +279,11 @@ function ConnectMnemonicButton({
 
   return (
     <div>
-      <textarea
-        style={{ width: '100%' }}
-        value={mnemonic}
-        onChange={(e) => setMnemonic(e.target.value)}
-        placeholder="Mnemonic"
-      />
+      <textarea value={mnemonic} onChange={(e) => setMnemonic(e.target.value)} placeholder="Mnemonic" />
 
-      <div style={{ display: 'flex' }}>
-        <input
-          style={{ width: '100%' }}
-          type="text"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
+      <div>
+        <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
         <button
-          style={{
-            height: '3rem',
-            borderRadius: '1rem',
-            borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
-            cursor: disabled ? 'unset' : 'pointer',
-            position: 'relative',
-          }}
           disabled={disabled}
           onClick={() => {
             const privateKey = mnemonicToPk(mnemonic, password)
@@ -364,27 +295,8 @@ function ConnectMnemonicButton({
             activate(c)
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              color: 'black',
-              margin: '0 0 0 1rem',
-            }}
-          >
-            {activating && (
-              <Spinner
-                color={'black'}
-                style={{
-                  height: '25%',
-                  marginLeft: '-1rem',
-                }}
-              />
-            )}
+          <div>
+            {activating && <Spinner color={'black'} />}
             {connected && <span role="img" aria-label="check" />}
           </div>
           mnemonic
@@ -409,9 +321,8 @@ function ConnectKeyStoreButton({
   const disabled = !!(!triedEager || activatingConnector || connected || error)
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div>
       <input
-        style={{ width: '100%' }}
         type="password"
         placeholder="password"
         value={password}
@@ -422,13 +333,6 @@ function ConnectKeyStoreButton({
       </label>
       <input
         type="file"
-        style={{
-          height: '3rem',
-          borderRadius: '1rem',
-          borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
-          cursor: disabled ? 'unset' : 'pointer',
-          position: 'relative',
-        }}
         disabled={disabled}
         value={selectedFile}
         onChange={(event) => {
@@ -453,27 +357,8 @@ function ConnectKeyStoreButton({
             })
         }}
       />
-      <div
-        style={{
-          position: 'absolute',
-          top: '0',
-          left: '0',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          color: 'black',
-          margin: '0 0 0 1rem',
-        }}
-      >
-        {activating && (
-          <Spinner
-            color={'black'}
-            style={{
-              height: '25%',
-              marginLeft: '-1rem',
-            }}
-          />
-        )}
+      <div>
+        {activating && <Spinner color={'black'} />}
         {connected && <span role="img" aria-label="check" />}
       </div>
     </div>
@@ -494,21 +379,9 @@ function ConnectPrivateKeyButton({
   const disabled = !!(!triedEager || activatingConnector || connected || error)
 
   return (
-    <div style={{ display: 'flex' }}>
-      <input
-        style={{ width: '100%' }}
-        type="text"
-        value={privateKey}
-        onChange={({ target: { value } }) => setPrivateKey(value)}
-      />
+    <div>
+      <input type="text" value={privateKey} onChange={({ target: { value } }) => setPrivateKey(value)} />
       <button
-        style={{
-          height: '3rem',
-          borderRadius: '1rem',
-          borderColor: activating ? 'orange' : connected ? 'green' : 'unset',
-          cursor: disabled ? 'unset' : 'pointer',
-          position: 'relative',
-        }}
         disabled={disabled}
         onClick={() => {
           const c = new PrivateKeyConnector({
@@ -519,27 +392,8 @@ function ConnectPrivateKeyButton({
           activate(c)
         }}
       >
-        <div
-          style={{
-            position: 'absolute',
-            top: '0',
-            left: '0',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            color: 'black',
-            margin: '0 0 0 1rem',
-          }}
-        >
-          {activating && (
-            <Spinner
-              color={'black'}
-              style={{
-                height: '25%',
-                marginLeft: '-1rem',
-              }}
-            />
-          )}
+        <div>
+          {activating && <Spinner color={'black'} />}
           {connected && <span role="img" aria-label="check" />}
         </div>
         private key
@@ -576,29 +430,16 @@ function App() {
   return (
     <>
       <Header />
-      <hr style={{ margin: '2rem' }} />
-      <div
-        style={{
-          display: 'grid',
-          gridGap: '1rem',
-          gridTemplateColumns: '1fr 1fr',
-        }}
-      >
+      <hr />
+      <div>
         {Object.entries(connectors).map(ConnectNetworkButton(connectButtonArgs))}
         {ConnectPrivateKeyButton(connectButtonArgs)}
         {ConnectMnemonicButton(connectButtonArgs)}
         {ConnectKeyStoreButton(connectButtonArgs)}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div>
         {(active || error) && (
           <button
-            style={{
-              height: '3rem',
-              marginTop: '2rem',
-              borderRadius: '1rem',
-              borderColor: 'red',
-              cursor: 'pointer',
-            }}
             onClick={() => {
               deactivate()
             }}
@@ -607,20 +448,12 @@ function App() {
           </button>
         )}
 
-        {error && <h4 style={{ marginTop: '1rem', marginBottom: '0' }}>{getErrorMessage(error)}</h4>}
+        {error && <h4>{getErrorMessage(error)}</h4>}
       </div>
 
-      <hr style={{ margin: '2rem' }} />
+      <hr />
 
-      <div
-        style={{
-          display: 'grid',
-          gridGap: '1rem',
-          gridTemplateColumns: 'fit-content',
-          maxWidth: '20rem',
-          margin: 'auto',
-        }}
-      >
+      <div>
         {signMessageButton(library, account)}
         <KillSessionButton connector={connector} />
       </div>
