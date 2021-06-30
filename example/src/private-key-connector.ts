@@ -3,8 +3,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 import Web3ProviderEngine from 'web3-provider-engine'
 import { RPCSubprovider } from '@0x/subproviders/lib/src/subproviders/rpc_subprovider' // https://github.com/0xProject/0x-monorepo/issues/1400
 import { PrivateKeyWalletSubprovider } from '@0x/subproviders/lib/src/subproviders/private_key_wallet'
-const CacheSubprovider = require('web3-provider-engine/subproviders/cache.js');
-
+const CacheSubprovider = require('web3-provider-engine/subproviders/cache.js')
 
 /**
  * based on TrezorConnector and
@@ -20,7 +19,7 @@ export class PrivateKeyConnector extends AbstractConnector {
     url,
     pollingInterval,
     requestTimeoutMs,
-    privateKey
+    privateKey,
   }: {
     chainId: number
     url: string
@@ -51,7 +50,7 @@ export class PrivateKeyConnector extends AbstractConnector {
   }
 
   public async getAccount(): Promise<string> {
-    return this.pkSubprovider.getAccountsAsync().then(accounts => accounts[0])
+    return this.pkSubprovider.getAccountsAsync().then((accounts) => accounts[0])
   }
 
   public deactivate() {

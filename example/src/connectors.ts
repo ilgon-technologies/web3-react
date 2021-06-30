@@ -12,7 +12,7 @@ function toHexStr(uint8Arr: Uint8Array) {
 
 export const MAINNET = {
   chainId: 0x696c67,
-  url: 'https://mainnet-rpc.ilgonwallet.com'
+  url: 'https://mainnet-rpc.ilgonwallet.com',
 }
 
 export function mnemonicToPk(mnemonic: string, password: string) {
@@ -25,8 +25,10 @@ export function mnemonicToPk(mnemonic: string, password: string) {
   return toHexStr(hdKey.derive(basePath + '/' + index).privateKey)
 }
 
-const mapKeys = (f: (s: string) => string) => <V>(r: Record<string, V>) =>
-  Object.fromEntries(Object.entries(r).map(([k, v]) => [f(k), v]))
+const mapKeys =
+  (f: (s: string) => string) =>
+  <V>(r: Record<string, V>) =>
+    Object.fromEntries(Object.entries(r).map(([k, v]) => [f(k), v]))
 
 const fromMyEtherWalletV2 = (json: Record<string, any>) => {
   if (json.privKey.length !== 64) {
@@ -36,7 +38,7 @@ const fromMyEtherWalletV2 = (json: Record<string, any>) => {
 }
 
 export async function getWallet(jsonfile: Record<string, unknown>, password: string) {
-  jsonfile = mapKeys(k => k.toLowerCase())(jsonfile)
+  jsonfile = mapKeys((k) => k.toLowerCase())(jsonfile)
   const ilvalidWalletFile = new Error('Invalid Wallet file')
   if (!jsonfile) {
     throw ilvalidWalletFile
@@ -61,7 +63,7 @@ export const injected = new InjectedConnector({})
 export const walletconnect = new WalletConnectConnector({
   rpc: { [MAINNET.chainId]: MAINNET.url },
   qrcode: true,
-  pollingInterval: POLLING_INTERVAL
+  pollingInterval: POLLING_INTERVAL,
 })
 
 export const ledger = new LedgerConnector({ ...MAINNET, pollingInterval: POLLING_INTERVAL })
@@ -70,5 +72,5 @@ export const trezor = new TrezorConnector({
   ...MAINNET,
   pollingInterval: POLLING_INTERVAL,
   manifestEmail: 'dummy@abc.xyz',
-  manifestAppUrl: 'http://localhost:1234'
+  manifestAppUrl: 'http://localhost:1234',
 })

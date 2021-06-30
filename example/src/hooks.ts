@@ -7,7 +7,7 @@ export function useShowUnhandledErrors() {
   useEffect(() => {
     const showError = alert
     window.addEventListener('unhandledrejection', (e: PromiseRejectionEvent) => {
-      const message = e.reason.message;
+      const message = e.reason.message
       // web3-provider-engine causes it and couldn't find why
       if (message !== 'Callback was already called.') {
         showError(message)
