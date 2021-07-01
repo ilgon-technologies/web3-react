@@ -50,26 +50,28 @@ function MnemonicModal({
   const [mnemonic, setMnemonic] = useState('')
   const [password, setPassword] = useState('')
   return (
-    <div>
-      <textarea value={mnemonic} onChange={(e) => setMnemonic(e.target.value)} placeholder="Mnemonic" />
+    <Modal isOpen={true} onRequestClose={() => setSubModal(null)} ariaHideApp={false}>
       <div>
-        <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-        <button
-          onClick={() => {
-            const privateKey = mnemonicToPk(mnemonic, password)
-            const c = new PrivateKeyConnector({
-              privateKey,
-              ...MAINNET,
-            })
-            setSubModal(null)
-            setConnecting(true)
-            activate(c).then()
-          }}
-        >
-          Connect
-        </button>
+        <textarea value={mnemonic} onChange={(e) => setMnemonic(e.target.value)} placeholder="Mnemonic" />
+        <div>
+          <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+          <button
+            onClick={() => {
+              const privateKey = mnemonicToPk(mnemonic, password)
+              const c = new PrivateKeyConnector({
+                privateKey,
+                ...MAINNET,
+              })
+              setSubModal(null)
+              setConnecting(true)
+              activate(c).then()
+            }}
+          >
+            Connect
+          </button>
+        </div>
       </div>
-    </div>
+    </Modal>
   )
 }
 
