@@ -151,18 +151,15 @@ function SignMessageButton() {
   )
 }
 
-function ShowNumberOfVaults({ contractInstance }: { contractInstance: ethers.Contract }) {
-  const { chainId, account } = useWeb3React<Web3Provider>()
+function ShowNumberOfVaults({ stakingContract }: { stakingContract: ethers.Contract }) {
+  const { account } = useWeb3React<Web3Provider>()
 
   const [vaults, setVaults] = useState<number | null>(null)
 
-  useEffect(() => {
-    if (chainId === MAINNET.chainId) {
-      contractInstance.getVaultsLength(account).then((len: ethers.BigNumber) => setVaults(len.toNumber()))
-    } else {
-      setVaults(null);
-    }
-  }, [chainId, account, contractInstance])
+  useEffect(
+    () => stakingContract.getVaultsLength(account).then((len: ethers.BigNumber) => setVaults(len.toNumber())),
+    [account, stakingContract]
+  )
 
   return <div>Number of vaults is: {vaults}</div>
 }
@@ -172,17 +169,20 @@ function StakeButton() {
 }
 
 export default () => {
-  const { library } = useWeb3React<Web3Provider>()
-  const contractInstance = new ethers.Contract(
-    '0x933cdac7b0bD9519C84e8F1F74Be51b07921e596',
-    stakingAbi,
-    library!.getSigner()
-  )
+  const { library, chainId } = useWeb3React<Web3Provider>()
+  const [stakingContract, setStakingContract] = useState<ethers.Contract | null>(null)
+  useEffect(() => {
+    if (chainId === MAINNET.chainId) {
+      setStakingContract(
+        new ethers.Contract('0x933cdac7b0bD9519C84e8F1F74Be51b07921e596', stakingAbi, library!.getSigner())
+      )
+    }
+  }, [library, chainId])
   return (
     <>
       <Header />
       <SignMessageButton />
-      <ShowNumberOfVaults contractInstance={contractInstance} />
+      {stakingContract && <ShowNumberOfVaults stakingContract={stakingContract} />}
     </>
   )
 }
