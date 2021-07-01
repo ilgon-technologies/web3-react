@@ -171,13 +171,15 @@ function StakeButton() {
 export default () => {
   const { library, chainId } = useWeb3React<Web3Provider>()
   const [stakingContract, setStakingContract] = useState<ethers.Contract | null>(null)
-  useEffect(() => {
-    if (chainId === MAINNET.chainId) {
+  useEffect(
+    () =>
       setStakingContract(
-        new ethers.Contract('0x933cdac7b0bD9519C84e8F1F74Be51b07921e596', stakingAbi, library!.getSigner())
-      )
-    }
-  }, [library, chainId])
+        chainId === MAINNET.chainId
+          ? new ethers.Contract('0x933cdac7b0bD9519C84e8F1F74Be51b07921e596', stakingAbi, library!.getSigner())
+          : null
+      ),
+    [library, chainId]
+  )
   return (
     <>
       <Header />
