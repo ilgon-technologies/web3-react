@@ -7,6 +7,7 @@ import { formatEther } from '@ethersproject/units'
 import { ethers } from 'ethers'
 import stakingAbi from '../stakingAbi'
 import { MAINNET } from '../connectors'
+import { TransactionResponse } from '@ethersproject/abstract-provider/src.ts/index'
 
 function Header() {
   function ChainId() {
@@ -164,8 +165,18 @@ function ShowNumberOfVaults({ stakingContract }: { stakingContract: ethers.Contr
   return <div>Number of vaults is: {vaults}</div>
 }
 
-function StakeButton() {
-  return <button onClick={() => {}}>Stake 1 eth</button>
+function StakeButton({ stakingContract }: { stakingContract: ethers.Contract }) {
+  return (
+    <button
+      onClick={() =>
+        (stakingContract.deposit({ value: BigNumber.from(10).pow(18) }) as Promise<TransactionResponse>)
+          .then((result) => result.wait())
+          .then(({ status }) => alert(status ? 'deposited' : 'reverted'))
+      }
+    >
+      Stake 1 eth
+    </button>
+  )
 }
 
 export default () => {
@@ -185,6 +196,7 @@ export default () => {
       <Header />
       <SignMessageButton />
       {stakingContract && <ShowNumberOfVaults stakingContract={stakingContract} />}
+      {stakingContract && <StakeButton stakingContract={stakingContract} />}
     </>
   )
 }
