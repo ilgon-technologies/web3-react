@@ -21,7 +21,7 @@ function ConnectorsWithoutInputButtons({ setConnecting }: { setConnecting: (b: b
           key={name}
           onClick={() => {
             setConnecting(true)
-            activate(connector)
+            activate(connector).then()
           }}
         >
           {name}
@@ -63,7 +63,7 @@ function MnemonicModal({
             })
             setSubModal(null)
             setConnecting(true)
-            activate(c)
+            activate(c).then()
           }}
         >
           Connect
@@ -112,7 +112,7 @@ function KeystoreModal({
               })
               setSubModal(null)
               setConnecting(true)
-              activate(c)
+              activate(c).then()
             })
             .catch((e) => {
               setSelectedFile('')
@@ -149,7 +149,7 @@ function PrivateKeyModal({
           })
           setSubModal(null)
           setConnecting(true)
-          activate(c)
+          activate(c).then()
         }}
       >
         Connect
@@ -158,6 +158,7 @@ function PrivateKeyModal({
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 function SubModal(subModal: SubModal, setSubModal: (s: SubModal | null) => void, setConnecting: (c: boolean) => void) {
   switch (subModal) {
     case 'Keystore':

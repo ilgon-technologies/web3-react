@@ -49,7 +49,7 @@ export async function getWallet(jsonfile: Record<string, unknown>, password: str
     return Wallet.fromV3(jsonfile as any, password, true)
   } else if (jsonfile.hash != null) {
     return thirdparty.fromEtherWallet(jsonfile as any, password)
-  } else if (jsonfile.publisher == 'MyEtherWallet') {
+  } else if (jsonfile.publisher === 'MyEtherWallet') {
     return fromMyEtherWalletV2(jsonfile)
   } else {
     throw ilvalidWalletFile
