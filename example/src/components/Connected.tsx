@@ -179,6 +179,24 @@ function StakeButton({ stakingContract }: { stakingContract: ethers.Contract }) 
   )
 }
 
+function SendToHimselfButton() {
+  const { library, account } = useWeb3React<Web3Provider>()
+
+  return (
+    <button
+      onClick={() =>
+        library!
+          .getSigner()
+          .sendTransaction({ to: account!, value: BigNumber.from(0) })
+          .then(({ wait }) => wait())
+          .then(({ status }) => alert(status ? 'sent' : 'reverted'))
+      }
+    >
+      Send himself 0 eth
+    </button>
+  )
+}
+
 export default () => {
   const { library, chainId } = useWeb3React<Web3Provider>()
   const [stakingContract, setStakingContract] = useState<ethers.Contract | null>(null)
@@ -197,6 +215,7 @@ export default () => {
       <SignMessageButton />
       {stakingContract && <ShowNumberOfVaults stakingContract={stakingContract} />}
       {stakingContract && <StakeButton stakingContract={stakingContract} />}
+      <SendToHimselfButton />
     </>
   )
 }
