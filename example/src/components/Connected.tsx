@@ -169,8 +169,8 @@ function StakeButton({ stakingContract }: { stakingContract: ethers.Contract }) 
   return (
     <button
       onClick={() =>
-        (stakingContract.deposit({ value: BigNumber.from(10).pow(18) }) as Promise<TransactionResponse>)
-          .then((result) => result.wait())
+        (stakingContract.deposit({ value: ethers.utils.parseEther('1') }) as Promise<TransactionResponse>)
+          .then(({ wait }) => wait())
           .then(({ status }) => alert(status ? 'deposited' : 'reverted'))
       }
     >
