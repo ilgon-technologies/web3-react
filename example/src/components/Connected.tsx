@@ -6,7 +6,7 @@ import { formatEther } from '@ethersproject/units'
 
 import { ethers } from 'ethers'
 import stakingAbi from '../stakingAbi'
-import {MAINNET} from "../connectors";
+import { MAINNET } from '../connectors'
 
 function Header() {
   function ChainId() {
