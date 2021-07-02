@@ -1,6 +1,6 @@
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
-import { LedgerConnector } from '@web3-react/ledger-connector'
+import { LedgerConnector } from './ledger-connector'
 import { TrezorConnector } from '@web3-react/trezor-connector'
 import HDKey from 'hdkey'
 import * as bip39 from 'bip39'
